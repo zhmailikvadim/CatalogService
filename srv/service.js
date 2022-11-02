@@ -1,12 +1,12 @@
 module.exports = srv => {
     const { Models, Components, Adapters } = srv.entities
     const cds = require('@sap/cds');
-    const cors = require('cors');
+    // const cors = require('cors');
     
-    cds.on('bootstrap', (app) => {
-        console.debug("Use: cors middleware");
-        app.use(cors());
-    })
+    // cds.on('bootstrap', (app) => {
+    //     console.debug("Use: cors middleware");
+    //     app.use(cors());
+    // })
 
    /* srv.before('DELETE', '*', async (req) => {
         console.log("DeleteBefore", req.entity, req.params);
