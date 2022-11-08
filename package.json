@@ -8,9 +8,11 @@
     "dependencies": {
         "@sap/cds": "^6.2.3",
         "@sap/hana-client": "^2.14.22",
+        "@sap/xssec": "^3.2.14",
         "cors": "^2.8.5",
         "express": "^4",
-        "hdb": "^0.19.5"
+        "hdb": "^0.19.5",
+        "passport": "^0.6.0"
     },
     "devDependencies": {
         "@sap/ux-specification": "^1.102.10",
@@ -48,8 +50,26 @@
     },
     "cds": {
         "requires": {
+            "[development]": {
+                "auth": {
+                    "kind": "basic-auth",
+                    "users": {
+                        "login": {
+                            "login": "login",
+                            "password": "password",
+                            "roles": [
+                                "Approver",
+                                "Commiter"
+                            ]
+                        }
+                    }
+                }
+            },
             "db": {
                 "kind": "hana"
+            },
+            "auth": {
+                "kind": "xsuaa"
             }
         },
         "hana": {
