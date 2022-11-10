@@ -3,7 +3,6 @@ ID: cat_navi
 description: A simple CAP project.
 version: 1.0.0
 modules:
-
 - name: cat_navi-srv
   type: nodejs
   path: gen/srv
@@ -18,7 +17,6 @@ modules:
     buildpack: nodejs_buildpack
   build-parameters:
     builder: npm-ci
-
 - name: cat_navi-db-deployer
   type: hdb
   path: gen/db
@@ -26,7 +24,6 @@ modules:
   - name: cat_navi-db
   parameters:
     buildpack: nodejs_buildpack
-
 - name: cat_navi-destination-content
   type: com.sap.application.content
   requires:
@@ -42,8 +39,8 @@ modules:
     content:
       subaccount:
         destinations:
-        - Name: cat_navi-app-srv
-          Authentication: OAuth2UserTokenExchange
+        - Authentication: OAuth2UserTokenExchange
+          Name: cat_navi-app-srv
           TokenServiceInstanceName: cat_navi-xsuaa-service
           TokenServiceKeyName: uaa_cat_navi-key
           URL: ~{srv-api/srv-url}
@@ -56,7 +53,13 @@ modules:
         existing_destinations_policy: update
   build-parameters:
     no-source: true
-
+- name: wf
+  type: com.sap.application.content
+  path: wf
+  requires:
+  - name: workflow
+    parameters:
+      content-target: true
 resources:
 - name: cat_navi-db
   type: com.sap.xs.hdi-container
@@ -65,7 +68,6 @@ resources:
     service-plan: hdi-shared
   properties:
     hdi-service-name: ${service-name}
-
 - name: cat_navi-destination-service
   type: org.cloudfoundry.managed-service
   parameters:
@@ -86,7 +88,6 @@ resources:
     service-plan: lite
   requires:
   - name: srv-api
-
 - name: uaa_cat_navi
   type: org.cloudfoundry.managed-service
   parameters:
@@ -94,6 +95,11 @@ resources:
     service: xsuaa
     service-name: cat_navi-xsuaa-service
     service-plan: application
+- name: workflow
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: workflow
+    service-plan: lite
 parameters:
   deploy_mode: html5-repo
   enable-parallel-deployments: true
