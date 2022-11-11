@@ -1,20 +1,53 @@
 {
-  "xsappname": "cat_navi",
-  "tenant-mode": "dedicated",
-  "description": "Security profile of called application",
-  "scopes": [
-    {
-      "name": "uaa.user",
-      "description": "UAA"
+    "xsappname": "cat_navi",
+    "tenant-mode": "dedicated",
+    "description": "Security profile of called application",
+    "scopes": [
+        {
+            "name": "$XSAPPNAME.CatalogOwner",
+            "description": "Catalog Owner"
+        },
+        {
+            "name": "$XSAPPNAME.CatalogViewer",
+            "description": "Catalog Viewer"
+        }
+    ],
+    "role-templates": [
+        {
+            "name": "CatalogOwner",
+            "description": "Catalog Owner",
+            "scope-references": [
+                "$XSAPPNAME.CatalogOwner"
+            ]
+        },
+        {
+            "name": "CatalogViewer",
+            "description": "Catalog Viewer",
+            "scope-references": [
+                "$XSAPPNAME.CatalogViewer"
+            ]
+        }
+    ],
+    "role-collections": [
+        {
+            "name": "CatalogOwner",
+            "description": "Catalog Owner",
+            "role-template-references": [
+                "$XSAPPNAME.CatalogOwner"
+            ]
+        },
+        {
+            "name": "CatalogViewer",
+            "description": "Catalog Viewer",
+            "role-template-references": [
+                "$XSAPPNAME.CatalogViewer"
+            ]
+        }
+    ],
+    "oauth2-configuration": {
+        "redirect-uris": [
+            "http://localhost/**",
+            "https://*.appgyver.black/**"
+        ]
     }
-  ],
-  "role-templates": [
-    {
-      "name": "Token_Exchange",
-      "description": "UAA",
-      "scope-references": [
-        "uaa.user"
-      ]
-    }
-  ]
 }

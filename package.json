@@ -6,20 +6,26 @@
     "license": "UNLICENSED",
     "private": true,
     "dependencies": {
+        "@sap-cloud-sdk/http-client": "^2.10.0",
         "@sap/cds": "^6.2.3",
         "@sap/hana-client": "^2.14.22",
+        "@sap/xssec": "^3.2.14",
         "cors": "^2.8.5",
         "express": "^4",
-        "hdb": "^0.19.5"
+        "hdb": "^0.19.5",
+        "passport": "^0.6.0"
     },
     "devDependencies": {
-        "@sap/ux-specification": "^1.102.10",
+        "@sap/ux-specification": "^1.102.11",
         "@sap/ux-ui5-tooling": "^1.7.6",
+        "rimraf": "^3.0.2",
         "sqlite3": "^5.0.2"
     },
     "scripts": {
         "start": "cds run",
-        "undeploy": "cf undeploy cat_navi --delete-services --delete-service-keys"
+        "undeploy": "cf undeploy cat_navi --delete-services --delete-service-keys --delete-service-brokers",
+        "build": "rimraf resources mta_archives && mbt build --mtar archive",
+        "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
     },
     "eslintConfig": {
         "extends": "eslint:recommended",
@@ -48,8 +54,32 @@
     },
     "cds": {
         "requires": {
+            "[development]": {
+                "auth": {
+                    "kind": "basic-auth",
+                    "users": {
+                        "login": {
+                            "login": "login",
+                            "password": "password",
+                            "roles": [
+                                "CatalogOwner"
+                            ]
+                        }
+                    }
+                }
+            },
             "db": {
                 "kind": "hana"
+            },
+            "auth": {
+                "kind": "xsuaa"
+            },
+            "workflowService": {
+                "kind": "rest",
+                "credentials": {
+                    "destination": "wf",
+                    "path": "rest/v1/workflow-instances"
+                }
             }
         },
         "hana": {

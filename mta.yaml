@@ -8,6 +8,8 @@ modules:
   path: gen/srv
   requires:
   - name: cat_navi-db
+  - name: uaa_cat_navi
+  - name: cat_navi-destination-service
   provides:
   - name: srv-api
     properties:
@@ -16,15 +18,6 @@ modules:
     buildpack: nodejs_buildpack
   build-parameters:
     builder: npm-ci
-  properties: 
-    CORS:
-    - uriPattern: .
-    allowedMethods:
-    - GET
-    - POST
-    - PUT
-    allowedOrigin:
-    - host: '*'    
 - name: cat_navi-db-deployer
   type: hdb
   path: gen/db
@@ -35,85 +28,39 @@ modules:
 - name: cat_navi-destination-content
   type: com.sap.application.content
   requires:
+  - name: srv-api
   - name: cat_navi-destination-service
     parameters:
       content-target: true
-  - name: cat_navi_html_repo_host
-    parameters:
-      service-key:
-        name: cat_navi_html_repo_host-key
   - name: uaa_cat_navi
     parameters:
       service-key:
         name: uaa_cat_navi-key
   parameters:
     content:
-      instance:
+      subaccount:
         destinations:
-        - Name: my_service2_cat_navi_html_repo_host
-          ServiceInstanceName: cat_navi-html5-app-host-service
-          ServiceKeyName: cat_navi_html_repo_host-key
+        - Authentication: OAuth2UserTokenExchange
+          Name: cat_navi-app-srv
+          TokenServiceInstanceName: cat_navi-xsuaa-service
+          TokenServiceKeyName: uaa_cat_navi-key
+          URL: ~{srv-api/srv-url}
           sap.cloud.service: my_service2
         - Authentication: OAuth2UserTokenExchange
           Name: my_service2_uaa_cat_navi
           ServiceInstanceName: cat_navi-xsuaa-service
           ServiceKeyName: uaa_cat_navi-key
           sap.cloud.service: my_service2
-        existing_destinations_policy: ignore
+        existing_destinations_policy: update
   build-parameters:
     no-source: true
-- name: cat_navi-app-content
+- name: workflow-module
   type: com.sap.application.content
-  path: .
+  path: workflow-module
   requires:
-  - name: cat_navi_html_repo_host
+  - name: workflow
     parameters:
       content-target: true
-  build-parameters:
-    build-result: resources
-    requires:
-    - artifacts:
-      - fiorikinds.zip
-      name: fiorikinds
-      target-path: resources/
-    - artifacts:
-      - fiorimodels.zip
-      name: fiorimodels
-      target-path: resources/
-    - artifacts:
-      - models1display.zip
-      name: models1display
-      target-path: resources/
-- name: fiorikinds
-  type: html5
-  path: app/fiorikinds
-  build-parameters:
-    build-result: dist
-    builder: custom
-    commands:
-    - npm install
-    - npm run build:cf
-    supported-platforms: []
-- name: fiorimodels
-  type: html5
-  path: app/fiorimodels
-  build-parameters:
-    build-result: dist
-    builder: custom
-    commands:
-    - npm install
-    - npm run build:cf
-    supported-platforms: []
-- name: models1display
-  type: html5
-  path: app/models1_display
-  build-parameters:
-    build-result: dist
-    builder: custom
-    commands:
-    - npm install
-    - npm run build:cf
-    supported-platforms: []
 resources:
 - name: cat_navi-db
   type: com.sap.xs.hdi-container
@@ -122,32 +69,16 @@ resources:
     service-plan: hdi-shared
   properties:
     hdi-service-name: ${service-name}
+
 - name: cat_navi-destination-service
   type: org.cloudfoundry.managed-service
   parameters:
-    config:
-      HTML5Runtime_enabled: true
-      init_data:
-        instance:
-          destinations:
-          - Authentication: NoAuthentication
-            Name: cat_navi
-            ProxyType: Internet
-            Type: HTTP
-            URL: ~{srv-api/srv-url}
-          existing_destinations_policy: update
-      version: 1.0.0
     service: destination
     service-name: cat_navi-destination-service
     service-plan: lite
   requires:
   - name: srv-api
-- name: cat_navi_html_repo_host
-  type: org.cloudfoundry.managed-service
-  parameters:
-    service: html5-apps-repo
-    service-name: cat_navi-html5-app-host-service
-    service-plan: app-host
+
 - name: uaa_cat_navi
   type: org.cloudfoundry.managed-service
   parameters:
@@ -155,6 +86,11 @@ resources:
     service: xsuaa
     service-name: cat_navi-xsuaa-service
     service-plan: application
+- name: workflow
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: workflow
+    service-plan: standard
 parameters:
   deploy_mode: html5-repo
   enable-parallel-deployments: true

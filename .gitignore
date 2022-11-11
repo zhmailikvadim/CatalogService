@@ -5,4 +5,8 @@ node_modules/
 mta_archives/cat_navi_1.0.0.mtar
 
 dist/
+gen/
 resources/
+
+default-env.json 
+

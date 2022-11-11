@@ -1,0 +1,48 @@
+{
+    "id": "productapproval",
+    "schemaVersion": "1.1.0",
+    "name": "productApproval",
+    "revision": "1",
+    "type": "task",
+    "readOnly": false,
+    "content": [
+        {
+            "id": "product",
+            "type": "section",
+            "title": "Order",
+            "content": [
+                {
+                    "id": "product-name",
+                    "type": "string",
+                    "label": "Product",
+                    "readOnly": true,
+                    "value": "${context.Order.productName}",
+                    "constraints": {
+                        "required": false
+                    }
+                },
+                {
+                    "id": "quantity",
+                    "type": "string",
+                    "label": "Quantity",
+                    "readOnly": false,
+                    "value": "${context.Order.quantity}",
+                    "constraints": {
+                        "required": false
+                    }
+                },
+                {
+                    "id": "total-price",
+                    "type": "string",
+                    "label": "Total Price",
+                    "readOnly": false,
+                    "value": "${context.Order.totalPrice}",
+                    "constraints": {
+                        "required": false
+                    }
+                }
+            ]
+        }
+    ],
+    "decisions": []
+}

@@ -1,0 +1,7 @@
+###
+POST http://localhost:4004/catalog/wf
+Content-Type: application/json
+
+{
+    "Order": {}
+}
